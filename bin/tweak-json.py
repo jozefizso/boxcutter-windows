@@ -5,23 +5,24 @@ import shutil
 import sys
 import time
 
-winrm = False
-ssh = True
-keep_failed_build = True
-vmx_data_post = True
-compression_level = 0
+winrm = True
+ssh = False
+keep_failed_build = False
+vmx_data_post = False
+compression_level = 1
 chocolatey = False
-add_debugging = True
-set_packer_debug = True
-add_debug_log = True
+add_debugging = False
+set_packer_debug = False
+add_debug_log = False
 add_unzip_vbs = False
 add_shell_command = False
 add_ssh_uninstaller = False
 tools_upload_flavor = False
 
-attach_provisions_iso = True
+attach_provisions_iso = False
 attach_windows_iso = True
 attach_vboxguestadditions_iso = True
+attach_shared_folder = False
 
 if add_ssh_uninstaller:
   add_debugging = False
@@ -65,15 +66,15 @@ download_cmd = 'floppy/_download.cmd'
 packer_config_cmd = 'floppy/_packer_config.cmd'
 packer_config_local_cmd = 'floppy/_packer_config_local.cmd'
 shutdown_seconds = '10'
-timeout_seconds = '3600'
+timeout_seconds = '10000'
 
 if winrm:
   winrm_suffix = '_winrm'
 else:
   winrm_suffix = ''
 
-shutdown_comment = 'Packer_Shutdown'
-shutdown_command = 'shutdown /s /t %s /f /d p:4:1 /c %s' % (shutdown_seconds, shutdown_comment)
+shutdown_comment = 'Packer Shutdown'
+shutdown_command = 'shutdown /s /t %s /f /d p:4:1 /c "%s"' % (shutdown_seconds, shutdown_comment)
 
 cwd = os.getcwd()
 provisions_iso = cwd + '/.windows/provisions/provisions.iso'
@@ -87,17 +88,17 @@ for i, a in enumerate(json_data['builders']):
     if keep_failed_build:
       a['keep_failed_build'] = True
 
-    a['output_directory'] = 'output-%s_%s%s' % (a['type'], a['vm_name'], winrm_suffix)
-    a['ssh_wait_timeout'] = timeout_seconds + 's'
-    a['shutdown_timeout'] = timeout_seconds + 's'
-    a['shutdown_command'] = shutdown_command
+    #a['output_directory'] = 'output-%s_%s%s' % (a['type'], a['vm_name'], winrm_suffix)
+    #a['ssh_wait_timeout'] = timeout_seconds + 's'
+    #a['shutdown_timeout'] = timeout_seconds + 's'
+    #a['shutdown_command'] = shutdown_command
 
     if add_ssh_uninstaller:
       del a['shutdown_timeout']
       #del a['shutdown_command']
       #a['shutdown_command'] = 'choice /C Y /N /T %s /D Y /M "Waiting %s seconds"' % (timeout_seconds, timeout_seconds)
 
-    a['http_directory'] = 'floppy'
+    #a['http_directory'] = 'floppy'
 
     floppy_files = dict.fromkeys(a['floppy_files'], True)
 
@@ -130,11 +131,10 @@ for i, a in enumerate(json_data['builders']):
     # to turn off to see if Cygwin is failing because of this
     if winrm or add_ssh_uninstaller:
       # buggy with winrm
-      if 'tools_upload_flavor' in a:
-        del a['tools_upload_flavor']
+      a['tools_upload_flavor'] = ''
 
-    a['disk_type_id'] = "0"
-    a['skip_compaction'] = compression_level == 0
+    # a['disk_type_id'] = "0"
+    # a['skip_compaction'] = compression_level == 0
 
     if winrm:
       a['communicator'] = 'winrm'
@@ -143,30 +143,30 @@ for i, a in enumerate(json_data['builders']):
       a['winrm_timeout'] = timeout_seconds + 's'
 
     if not tools_upload_flavor:
-      if 'tools_upload_flavor' in a:
-        del a['tools_upload_flavor']
+      a['tools_upload_flavor'] = ''
 
     if not 'vmx_data' in a:
       a['vmx_data'] = {}
 
-    a['vmx_data']['sharedFolder.maxNum'] = '1'
-    a['vmx_data']['sharedFolder0.enabled'] = 'TRUE'
-    a['vmx_data']['sharedFolder0.expiration'] = 'never'
-    a['vmx_data']['sharedFolder0.guestName'] = 'C'
-    a['vmx_data']['sharedFolder0.hostPath'] = 'C:\\'
-    a['vmx_data']['sharedFolder0.present'] = 'TRUE'
-    a['vmx_data']['sharedFolder0.readAccess'] = 'TRUE'
-    a['vmx_data']['sharedFolder0.writeAccess'] = 'TRUE'
-    a['vmx_data']['hgfs.maprootshare'] = 'TRUE'
+    if attach_shared_folder:
+        a['vmx_data']['sharedFolder.maxNum'] = '1'
+        a['vmx_data']['sharedFolder0.enabled'] = 'TRUE'
+        a['vmx_data']['sharedFolder0.expiration'] = 'never'
+        a['vmx_data']['sharedFolder0.guestName'] = 'C'
+        a['vmx_data']['sharedFolder0.hostPath'] = 'C:\\'
+        a['vmx_data']['sharedFolder0.present'] = 'TRUE'
+        a['vmx_data']['sharedFolder0.readAccess'] = 'TRUE'
+        a['vmx_data']['sharedFolder0.writeAccess'] = 'TRUE'
+        a['vmx_data']['hgfs.maprootshare'] = 'TRUE'
 
-    a['vmx_data']['sound.autodetect'] = 'TRUE'
-    a['vmx_data']['sound.filename'] = '-1'
-    #a['vmx_data']['sound.pciSlotNumber'] = '32'
-    a['vmx_data']['sound.present'] = 'TRUE'
-    a['vmx_data']['sound.startconnected'] = 'TRUE'
-    a['vmx_data']['sound.virtualdev'] = 'hdaudio'
+        a['vmx_data']['sound.autodetect'] = 'TRUE'
+        a['vmx_data']['sound.filename'] = '-1'
+        #a['vmx_data']['sound.pciSlotNumber'] = '32'
+        a['vmx_data']['sound.present'] = 'TRUE'
+        a['vmx_data']['sound.startconnected'] = 'TRUE'
+        a['vmx_data']['sound.virtualdev'] = 'hdaudio'
 
-    a['vmx_data']['virtualhw.version'] = '10'
+    # a['vmx_data']['virtualhw.version'] = '10'
 
     if attach_provisions_iso:
       if os.path.exists(provisions_iso):
@@ -179,7 +179,7 @@ for i, a in enumerate(json_data['builders']):
       if os.path.exists(windows_iso):
         a['vmx_data']['scsi0:1.present'] = 'TRUE'
         a['vmx_data']['scsi0:1.deviceType'] = 'cdrom-image'
-        a['vmx_data']['scsi0:1.fileName'] = windows_iso
+        a['vmx_data']['scsi0:1.fileName'] = '{{ user `vmware_windows_iso` }}'
 
     if vmx_data_post:
       if not 'vmx_data_post' in a:
@@ -231,7 +231,7 @@ for i, a in enumerate(json_data['builders']):
 
 for i in json_data['post-processors']:
   if i['type'] == 'vagrant':
-    i['keep_input_artifact'] = True
+    i['keep_input_artifact'] = False
     i['compression_level'] = compression_level
     #if winrm:
     #  i['output'] = 'winrm-' + i['output']
@@ -339,6 +339,7 @@ for i, a in enumerate(json_data['provisioners']):
 
 if 'variables' in json_data:
   json_data['variables']['shutdown_command'] = shutdown_command
+  json_data['variables']['vmware_windows_iso'] = windows_iso
 
 new_data = json_data
 
