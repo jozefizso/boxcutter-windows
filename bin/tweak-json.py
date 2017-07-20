@@ -16,7 +16,7 @@ add_debugging = True
 set_packer_debug = False
 add_debug_log = True
 add_unzip_vbs = False
-add_shell_command = True
+add_shell_command = False
 add_ssh_uninstaller = False
 tools_upload_flavor = False
 default_cm = 'nocm'
@@ -236,6 +236,11 @@ for i in json_data['post-processors']:
     #if winrm:
     #  i['output'] = 'winrm-' + i['output']
 
+    if compression_level == 0:
+      i['only'] = 'force-vagrant'
+    else:
+      del i['only']
+
 packer_debug_env = 'PACKER_DEBUG=1'
 
 if add_shell_command:
@@ -266,7 +271,7 @@ for i, a in enumerate(json_data['provisioners']):
     if 'execute_command' in a:
       del a['execute_command']
 
-    a['guest_os_type'] = 'windows'
+    #a['guest_os_type'] = 'windows'
 
   if 'inline' in a:
     if winrm or add_ssh_uninstaller:
