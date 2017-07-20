@@ -12,11 +12,11 @@ keep_input_artifact = True
 vmx_data_post = False
 compression_level = 0
 chocolatey = False
-add_debugging = False
+add_debugging = True
 set_packer_debug = False
-add_debug_log = False
+add_debug_log = True
 add_unzip_vbs = False
-add_shell_command = False
+add_shell_command = True
 add_ssh_uninstaller = False
 tools_upload_flavor = False
 default_cm = 'nocm'
@@ -256,7 +256,7 @@ if add_shell_command:
   json_data['provisioners'].insert(0, debug_step)
 
 for i, a in enumerate(json_data['provisioners']):
-  if a['type'] != 'shell':
+  if a['type'] != 'windows-shell':
     continue
 
   if winrm:
@@ -275,7 +275,7 @@ for i, a in enumerate(json_data['provisioners']):
     continue
 
   #if winrm:
-  a['binary'] = 'true'
+  #a['binary'] = 'true'
 
   if 'script' in a:
     continue
