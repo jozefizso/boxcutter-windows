@@ -229,6 +229,11 @@ for i, a in enumerate(json_data['builders']):
           vboxguestadditions_iso
         ])
 
+  # builders: modify iso properties
+  a['iso_checksum'] = '{{ user `iso_checksum` }}'
+  a['iso_checksum_type'] = '{{ user `iso_checksum_type` }}'
+  a['iso_url'] = '{{ user `iso_url` }}/{{ user `iso_name` }}'
+
 for i in json_data['post-processors']:
   if i['type'] == 'vagrant':
     i['keep_input_artifact'] = keep_input_artifact
@@ -346,6 +351,9 @@ if 'variables' in json_data:
   json_data['variables']['cm'] = default_cm
   json_data['variables']['shutdown_command'] = shutdown_command
   json_data['variables']['vmware_windows_iso'] = windows_iso
+  #json_data['variables']['iso_checksum_type'] = 'sha1'
+  #json_data['variables']['iso_name'] = json_data['variables']['iso_url']
+  #json_data['variables']['iso_url'] = 'iso'
 
 new_data = json_data
 
