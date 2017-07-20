@@ -15,21 +15,26 @@
         "floppy/powerconfig.bat",
         "floppy/unzip.vbs",
         "floppy/win8x64-pro/Autounattend.xml",
-        "floppy/zz-start-transports.cmd"
+        "floppy/zz-start-transports.cmd",
+        "floppy/zzz-debug-log.cmd"
       ],
       "guest_os_type": "windows8-64",
       "headless": "{{ user `headless` }}",
       "iso_checksum": "{{ user `iso_checksum` }}",
-      "iso_checksum_type": "sha1",
-      "iso_url": "{{ user `iso_url` }}",
+      "iso_checksum_type": "{{ user `iso_checksum_type` }}",
+      "iso_url": "{{ user `iso_url` }}/{{ user `iso_name` }}",
+      "keep_failed_build": true,
       "shutdown_command": "{{ user `shutdown_command`}}",
-      "tools_upload_flavor": "windows",
+      "tools_upload_flavor": "",
       "type": "vmware-iso",
       "vm_name": "win8x64-pro",
       "vmx_data": {
         "cpuid.coresPerSocket": "1",
         "memsize": "2048",
-        "numvcpus": "2"
+        "numvcpus": "2",
+        "scsi0:1.deviceType": "cdrom-image",
+        "scsi0:1.fileName": "{{ user `vmware_windows_iso` }}",
+        "scsi0:1.present": "TRUE"
       },
       "winrm_password": "vagrant",
       "winrm_timeout": "10000s",
@@ -51,15 +56,17 @@
         "floppy/powerconfig.bat",
         "floppy/unzip.vbs",
         "floppy/win8x64-pro/Autounattend.xml",
-        "floppy/zz-start-transports.cmd"
+        "floppy/zz-start-transports.cmd",
+        "floppy/zzz-debug-log.cmd"
       ],
       "guest_additions_mode": "attach",
       "guest_os_type": "Windows8_64",
       "hard_drive_interface": "sata",
       "headless": "{{ user `headless` }}",
       "iso_checksum": "{{ user `iso_checksum` }}",
-      "iso_checksum_type": "sha1",
-      "iso_url": "{{ user `iso_url` }}",
+      "iso_checksum_type": "{{ user `iso_checksum_type` }}",
+      "iso_url": "{{ user `iso_url` }}/{{ user `iso_name` }}",
+      "keep_failed_build": true,
       "shutdown_command": "{{ user `shutdown_command`}}",
       "type": "virtualbox-iso",
       "vboxmanage": [
@@ -100,8 +107,8 @@
       ],
       "guest_os_type": "win-8",
       "iso_checksum": "{{ user `iso_checksum` }}",
-      "iso_checksum_type": "sha1",
-      "iso_url": "{{ user `iso_url` }}",
+      "iso_checksum_type": "{{ user `iso_checksum_type` }}",
+      "iso_url": "{{ user `iso_url` }}/{{ user `iso_name` }}",
       "parallels_tools_flavor": "win",
       "prlctl": [
         [
@@ -127,8 +134,9 @@
   ],
   "post-processors": [
     {
-      "compression_level": 1,
-      "keep_input_artifact": false,
+      "compression_level": 0,
+      "keep_input_artifact": true,
+      "only": "force-vagrant",
       "output": "box/{{.Provider}}/win8x64-pro-{{user `cm`}}{{user `cm_version`}}-{{user `version`}}.box",
       "type": "vagrant",
       "vagrantfile_template": "tpl/vagrantfile-win8x64-pro.tpl"
@@ -142,26 +150,29 @@
         "UPDATE={{user `update`}}"
       ],
       "scripts": [
+        "script/dump-logs.cmd",
         "script/vagrant.bat",
         "script/cmtool.bat",
         "script/vmtool.bat",
-        "script/clean.bat",
-        "script/ultradefrag.bat",
-        "script/uninstall-7zip.bat",
-        "script/sdelete.bat"
+        "script/save-logs.cmd",
+        "script/save-temp-dirs.cmd",
+        "floppy/zzz-debug-log.cmd"
       ],
       "type": "windows-shell"
     }
   ],
   "variables": {
-    "cm": "chef",
+    "cm": "nocm",
     "cm_version": "",
     "disk_size": "40960",
     "headless": "false",
     "iso_checksum": "1ce53ad5f60419cf04a715cf3233f247e48beec4",
-    "iso_url": "iso/en_windows_8_x64_dvd_915440.iso",
+    "iso_checksum_type": "sha1",
+    "iso_name": "en_windows_8_x64_dvd_915440.iso",
+    "iso_url": "iso",
     "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
     "update": "true",
-    "version": "0.1.0"
+    "version": "0.1.0",
+    "vmware_windows_iso": "C:/Program Files (x86)/VMware/VMware Workstation/windows.iso"
   }
 }

@@ -14,21 +14,26 @@
         "floppy/passwordchange.bat",
         "floppy/powerconfig.bat",
         "floppy/win2008r2-standard/Autounattend.xml",
-        "floppy/zz-start-transports.cmd"
+        "floppy/zz-start-transports.cmd",
+        "floppy/zzz-debug-log.cmd"
       ],
       "guest_os_type": "windows7srv-64",
       "headless": "{{ user `headless` }}",
       "iso_checksum": "{{ user `iso_checksum` }}",
-      "iso_checksum_type": "sha1",
-      "iso_url": "{{ user `iso_url` }}",
+      "iso_checksum_type": "{{ user `iso_checksum_type` }}",
+      "iso_url": "{{ user `iso_url` }}/{{ user `iso_name` }}",
+      "keep_failed_build": true,
       "shutdown_command": "{{ user `shutdown_command`}}",
-      "tools_upload_flavor": "windows",
+      "tools_upload_flavor": "",
       "type": "vmware-iso",
       "vm_name": "eval-win2008r2-standard",
       "vmx_data": {
         "cpuid.coresPerSocket": "1",
         "memsize": "2048",
-        "numvcpus": "2"
+        "numvcpus": "2",
+        "scsi0:1.deviceType": "cdrom-image",
+        "scsi0:1.fileName": "{{ user `vmware_windows_iso` }}",
+        "scsi0:1.present": "TRUE"
       },
       "winrm_password": "vagrant",
       "winrm_timeout": "10000s",
@@ -49,17 +54,19 @@
         "floppy/passwordchange.bat",
         "floppy/powerconfig.bat",
         "floppy/win2008r2-standard/Autounattend.xml",
-        "floppy/zz-start-transports.cmd"
+        "floppy/zz-start-transports.cmd",
+        "floppy/zzz-debug-log.cmd"
       ],
       "guest_additions_mode": "attach",
       "guest_os_type": "Windows2008_64",
       "hard_drive_interface": "sata",
       "headless": "{{ user `headless` }}",
       "iso_checksum": "{{ user `iso_checksum` }}",
-      "iso_checksum_type": "sha1",
-      "iso_url": "{{ user `iso_url` }}",
-      "shutdown_command": "{{ user `shutdown_command`}}",
+      "iso_checksum_type": "{{ user `iso_checksum_type` }}",
+      "iso_url": "{{ user `iso_url` }}/{{ user `iso_name` }}",
+      "keep_failed_build": true,
       "post_shutdown_delay": "30s",
+      "shutdown_command": "{{ user `shutdown_command`}}",
       "type": "virtualbox-iso",
       "vboxmanage": [
         [
@@ -98,8 +105,8 @@
       ],
       "guest_os_type": "win-2008",
       "iso_checksum": "{{ user `iso_checksum` }}",
-      "iso_checksum_type": "sha1",
-      "iso_url": "{{ user `iso_url` }}",
+      "iso_checksum_type": "{{ user `iso_checksum_type` }}",
+      "iso_url": "{{ user `iso_url` }}/{{ user `iso_name` }}",
       "parallels_tools_flavor": "win",
       "prlctl": [
         [
@@ -125,8 +132,9 @@
   ],
   "post-processors": [
     {
-      "compression_level": 1,
-      "keep_input_artifact": false,
+      "compression_level": 0,
+      "keep_input_artifact": true,
+      "only": "force-vagrant",
       "output": "box/{{.Provider}}/eval-win2008r2-standard-{{user `cm`}}{{user `cm_version`}}-{{user `version`}}.box",
       "type": "vagrant",
       "vagrantfile_template": "tpl/vagrantfile-eval-win2008r2-standard.tpl"
@@ -140,26 +148,29 @@
         "UPDATE={{user `update`}}"
       ],
       "scripts": [
+        "script/dump-logs.cmd",
         "script/vagrant.bat",
         "script/cmtool.bat",
         "script/vmtool.bat",
-        "script/clean.bat",
-        "script/ultradefrag.bat",
-        "script/uninstall-7zip.bat",
-        "script/sdelete.bat"
+        "script/save-logs.cmd",
+        "script/save-temp-dirs.cmd",
+        "floppy/zzz-debug-log.cmd"
       ],
       "type": "windows-shell"
     }
   ],
   "variables": {
-    "cm": "chef",
+    "cm": "nocm",
     "cm_version": "",
     "disk_size": "40960",
     "headless": "false",
     "iso_checksum": "beed231a34e90e1dd9a04b3afabec31d62ce3889",
-    "iso_url": "http://download.microsoft.com/download/7/5/E/75EC4E54-5B02-42D6-8879-D8D3A25FBEF7/7601.17514.101119-1850_x64fre_server_eval_en-us-GRMSXEVAL_EN_DVD.iso",
+    "iso_checksum_type": "sha1",
+    "iso_name": "http://download.microsoft.com/download/7/5/E/75EC4E54-5B02-42D6-8879-D8D3A25FBEF7/7601.17514.101119-1850_x64fre_server_eval_en-us-GRMSXEVAL_EN_DVD.iso",
+    "iso_url": "iso",
     "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
     "update": "true",
-    "version": "0.1.0"
+    "version": "0.1.0",
+    "vmware_windows_iso": "C:/Program Files (x86)/VMware/VMware Workstation/windows.iso"
   }
 }
