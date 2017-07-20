@@ -23,7 +23,6 @@
       "iso_checksum": "{{ user `iso_checksum` }}",
       "iso_checksum_type": "{{ user `iso_checksum_type` }}",
       "iso_url": "{{ user `iso_url` }}/{{ user `iso_name` }}",
-      "keep_failed_build": true,
       "shutdown_command": "{{ user `shutdown_command`}}",
       "tools_upload_flavor": "",
       "type": "vmware-iso",
@@ -66,7 +65,6 @@
       "iso_checksum": "{{ user `iso_checksum` }}",
       "iso_checksum_type": "{{ user `iso_checksum_type` }}",
       "iso_url": "{{ user `iso_url` }}/{{ user `iso_name` }}",
-      "keep_failed_build": true,
       "shutdown_command": "{{ user `shutdown_command`}}",
       "type": "virtualbox-iso",
       "vboxmanage": [
@@ -142,7 +140,6 @@
     {
       "compression_level": 0,
       "keep_input_artifact": true,
-      "only": "force-vagrant",
       "output": "box/{{.Provider}}/win2012-standard-{{user `cm`}}{{user `cm_version`}}-{{user `version`}}.box",
       "type": "vagrant",
       "vagrantfile_template": "tpl/vagrantfile-win2012-standard.tpl"
@@ -157,11 +154,13 @@
       ],
       "scripts": [
         "script/dump-logs.cmd",
+        "script/dump-logs.cmd",
         "script/vagrant.bat",
         "script/cmtool.bat",
         "script/vmtool.bat",
         "script/save-logs.cmd",
         "script/save-temp-dirs.cmd",
+        "floppy/zzz-debug-log.cmd",
         "floppy/zzz-debug-log.cmd"
       ],
       "type": "windows-shell"
