@@ -7,7 +7,6 @@ import time
 
 winrm = True
 ssh = False
-keep_failed_build = True
 keep_input_artifact = True
 vmx_data_post = False
 compression_level = 0
@@ -45,7 +44,6 @@ if len(sys.argv) < 2:
 
 if len(sys.argv) >= 3:
   winrm = True
-  keep_failed_build = True
   vmx_data_post = True
 
 json_file_path = sys.argv[1]
@@ -87,8 +85,7 @@ vboxguestadditions_iso = "C:/Progra~1/Oracle/VirtualBox/VBoxGuestAdditions.iso"
 
 for i, a in enumerate(json_data['builders']):
   if re.search('^(vmware|virtualbox)\-', a['type']):
-    if keep_failed_build:
-      a['keep_failed_build'] = True
+    del a['keep_failed_build']
 
     #a['output_directory'] = 'output-%s_%s%s' % (a['type'], a['vm_name'], winrm_suffix)
     #a['ssh_wait_timeout'] = timeout_seconds + 's'
@@ -241,10 +238,10 @@ for i in json_data['post-processors']:
     #if winrm:
     #  i['output'] = 'winrm-' + i['output']
 
-    if compression_level == 0:
-      i['only'] = 'force-vagrant'
-    else:
-      del i['only']
+    #if compression_level == 0:
+    #  i['only'] = 'force-vagrant'
+    #else:
+    del i['only']
 
 packer_debug_env = 'PACKER_DEBUG=1'
 

@@ -12,7 +12,7 @@ set ISOPATH=file:///e:/technet
 set PACKER_LOG=0
 set PACKER_VARS=-var "cm=nocm" -var "version=!BOX_VERSION!" -var "update=false" -var "headless=false" -var "iso_url=!ISOPATH!"
 
-set COMMAND=packer.exe build -only=!VMWARE_BUILDER! !PACKER_VARS! !TEMPLATE!
+set COMMAND=packer.exe build -only=!VMWARE_BUILDER! !PACKER_VARS! -on-error=abort !TEMPLATE!
 echo %COMMAND%
 
 %COMMAND%
