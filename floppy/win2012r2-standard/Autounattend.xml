@@ -37,7 +37,7 @@
                     <CreatePartitions>
                         <CreatePartition wcm:action="add">
                             <Order>1</Order>
-                            <Size>20000</Size>
+                            <Size>40000</Size>
                             <Type>Primary</Type>
                         </CreatePartition>
                     </CreatePartitions>
@@ -47,6 +47,7 @@
                             <Extend>true</Extend>
                             <Format>NTFS</Format>
                             <Letter>C</Letter>
+                            <Label>System</Label> 
                             <Order>1</Order>
                             <PartitionID>1</PartitionID>
                         </ModifyPartition>
@@ -102,7 +103,7 @@
         </component>
         <component name="Microsoft-Windows-IE-ESC" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <IEHardenAdmin>false</IEHardenAdmin>
-            <IEHardenUser>false</IEHardenUser>
+            <IEHardenUser>true</IEHardenUser>
         </component>
         <component name="Microsoft-Windows-IE-InternetExplorer" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <SearchScopes>
@@ -110,7 +111,7 @@
                     <ScopeDefault>true</ScopeDefault>
                     <ScopeDisplayName>Google</ScopeDisplayName>
                     <ScopeKey>Google</ScopeKey>
-                    <ScopeUrl>http://www.google.com/search?q={searchTerms}</ScopeUrl>
+                    <ScopeUrl>https://www.google.com/search?q={searchTerms}</ScopeUrl>
                 </Scope>
             </SearchScopes>
             <DisableAccelerators>true</DisableAccelerators>
@@ -123,7 +124,7 @@
                     <ScopeDefault>true</ScopeDefault>
                     <ScopeDisplayName>Google</ScopeDisplayName>
                     <ScopeKey>Google</ScopeKey>
-                    <ScopeUrl>http://www.google.com/search?q={searchTerms}</ScopeUrl>
+                    <ScopeUrl>https://www.google.com/search?q={searchTerms}</ScopeUrl>
                 </Scope>
             </SearchScopes>
             <DisableAccelerators>true</DisableAccelerators>
@@ -143,12 +144,14 @@
             </FirewallGroups>
         </component>
         <component name="Microsoft-Windows-TerminalServices-RDP-WinStationExtensions" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            <UserAuthentication>0</UserAuthentication>
+            <SecurityLayer>2</SecurityLayer>
+            <!-- 1: Specifies that Network-Level user authentication is required.  -->
+            <UserAuthentication>1</UserAuthentication>
         </component>
     </settings>
     <settings pass="offlineServicing">
         <component name="Microsoft-Windows-LUA-Settings" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            <EnableLUA>false</EnableLUA>
+            <EnableLUA>true</EnableLUA>
         </component>
     </settings>
     <cpi:offlineImage cpi:source="wim:c:/users/misheska/sources/win2012r2/install.wim#Windows Server 2012 R2 SERVERSTANDARD" xmlns:cpi="urn:schemas-microsoft-com:cpi" />
