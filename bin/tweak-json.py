@@ -7,7 +7,8 @@ import time
 
 winrm = True
 ssh = False
-keep_failed_build = False
+keep_failed_build = True
+keep_input_artifact = True
 vmx_data_post = False
 compression_level = 1
 chocolatey = False
@@ -18,6 +19,7 @@ add_unzip_vbs = False
 add_shell_command = False
 add_ssh_uninstaller = False
 tools_upload_flavor = False
+default_cm = 'nocm'
 
 attach_provisions_iso = False
 attach_windows_iso = True
@@ -229,7 +231,7 @@ for i, a in enumerate(json_data['builders']):
 
 for i in json_data['post-processors']:
   if i['type'] == 'vagrant':
-    i['keep_input_artifact'] = False
+    i['keep_input_artifact'] = keep_input_artifact
     i['compression_level'] = compression_level
     #if winrm:
     #  i['output'] = 'winrm-' + i['output']
@@ -336,6 +338,7 @@ for i, a in enumerate(json_data['provisioners']):
   a['scripts'] = scripts
 
 if 'variables' in json_data:
+  json_data['variables']['cm'] = default_cm
   json_data['variables']['shutdown_command'] = shutdown_command
   json_data['variables']['vmware_windows_iso'] = windows_iso
 
