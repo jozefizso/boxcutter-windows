@@ -123,9 +123,7 @@ for i, a in enumerate(json_data['builders']):
       if 'floppy/openssh.bat' in floppy_files:
         del floppy_files['floppy/openssh.bat']
 
-    a['floppy_files'] = floppy_files.keys()
-
-    a['floppy_files'].sort()
+    a['floppy_files'] = sorted(floppy_files)
 
   if re.search('^vmware\-', a['type']):
     # to turn off to see if Cygwin is failing because of this
@@ -348,7 +346,7 @@ mtime = os.path.getmtime(json_file_path)
 new_data  = json.dumps(new_data, sort_keys=True, indent=2, separators=(',', ': '))
 json_file.close()
 
-json_file = open(json_file_path, 'wb')
+json_file = open(json_file_path, 'w')
 json_file.write(new_data)
 json_file.close()
 
